@@ -42,7 +42,7 @@ class Rss {
       if (notFinish) {
         setTimeout(() => {
           offset = offset + limit
-        }, 3000)
+        }, 5000)
       }
     }
     await Guild.findByIdAndUpdate(
