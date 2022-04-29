@@ -67,7 +67,7 @@ class Rss {
             description: `[Ch ${manga['ch']}](https://mangadex.org/chapter/${manga['chId']})`,
             color: 15258703,
             image: {
-              url: `https://og.mangadex.org/og-image/manga/${manga['mangaId']}`
+              url: `https://og.mangadex.org/og-image/chapter/${manga['chId']}`
             },
             footer: {
               text: 'Uma cortesia Dexbr',
