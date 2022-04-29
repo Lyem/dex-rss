@@ -26,6 +26,7 @@ class Rss {
           try {
             mangas.push({
               ch: data['attributes']['chapter'],
+              chId: data['id'],
               scan: data['relationships'][0]['attributes']['name'],
               scanId: data['relationships'][0]['id'],
               manga: data['relationships'][1]['attributes']['title']['en'],
@@ -61,20 +62,19 @@ class Rss {
         avatar_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png',
         embeds: [
           {
-            author: {
-              name: `${manga['scan']}`,
-              url: `https://mangadex.org/group/${manga['scanId']}`,
-              icon_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png'
-            },
             title: `${manga['manga']}`,
             url: `https://mangadex.org/title/${manga['mangaId']}`,
-            description: `Ch ${manga['ch']}`,
+            description: `[Ch ${manga['ch']}](https://mangadex.org/chapter/${manga['chId']})`,
             color: 15258703,
             image: {
               url: `https://og.mangadex.org/og-image/manga/${manga['mangaId']}`
             }
           }
-        ]
+        ],
+        footer: {
+          text: 'Uma cortesia Dexbr',
+          icon_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png'
+        }
       })
     })
   }
