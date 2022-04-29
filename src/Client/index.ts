@@ -77,8 +77,6 @@ class Rss {
         ]
       })
     })
-
-    this.verify()
   }
 
   async verify() {
@@ -89,6 +87,7 @@ class Rss {
       const lastUpdate = new Date(guild.lastUpdate)
       const nextUpdate = moment(lastUpdate).add(guild.timeUpdate, 's').toDate()
       if (new Date() > nextUpdate) {
+        dates.push(moment(new Date()).add(guild.timeUpdate, 's').toDate())
         this.getInfos(guild.lang, guild._id, guild.webHook, lastUpdate)
       } else {
         dates.push(nextUpdate)
