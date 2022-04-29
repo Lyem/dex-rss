@@ -68,13 +68,13 @@ class Rss {
             color: 15258703,
             image: {
               url: `https://og.mangadex.org/og-image/manga/${manga['mangaId']}`
+            },
+            footer: {
+              text: 'Uma cortesia Dexbr',
+              icon_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png'
             }
           }
-        ],
-        footer: {
-          text: 'Uma cortesia Dexbr',
-          icon_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png'
-        }
+        ]
       })
     })
   }
