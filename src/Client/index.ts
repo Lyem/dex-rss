@@ -45,13 +45,19 @@ class Rss {
         }, 5000)
       }
     }
+    const update =
+      mangas.length != 0
+        ? {
+            lastUpdate: new Date(),
+            lastMangaUpdate: new Date(mangas[0]['createdAt'])
+          }
+        : {
+            lastUpdate: new Date()
+          }
     await Guild.findByIdAndUpdate(
       guildId,
       {
-        $set: {
-          lastUpdate: new Date(),
-          lastMangaUpdate: new Date(mangas[0]['createdAt'])
-        }
+        $set: update
       },
       { new: true }
     )
