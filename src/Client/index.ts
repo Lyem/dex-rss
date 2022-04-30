@@ -3,13 +3,14 @@ const Guild = require('../Models/guilds')
 import moment from 'moment'
 import axios from 'axios'
 import smallerDate from '../Utils/smaller_date'
+import bundler from '../Utils/bundler'
 
 class Rss {
   async getInfos(
     lang: string,
     guildId: string,
     webHook: string,
-    lastUpdate: Date
+    lastMangaUpdate: Date
   ) {
     console.log('getInfos')
     let offset = 0
@@ -22,13 +23,12 @@ class Rss {
       )
       const data = response.data
       data.data.map((data: any) => {
-        if (new Date(data['attributes']['createdAt']) > lastUpdate) {
+        if (new Date(data['attributes']['createdAt']) > lastMangaUpdate) {
           try {
             mangas.push({
               ch: data['attributes']['chapter'],
               chId: data['id'],
-              scan: data['relationships'][0]['attributes']['name'],
-              scanId: data['relationships'][0]['id'],
+              createdAt: data['attributes']['createdAt'],
               manga: data['relationships'][1]['attributes']['title']['en'],
               mangaId: data['relationships'][1]['id']
             })
@@ -47,7 +47,12 @@ class Rss {
     }
     await Guild.findByIdAndUpdate(
       guildId,
-      { $set: { lastUpdate: new Date() } },
+      {
+        $set: {
+          lastUpdate: new Date(),
+          lastMangaUpdate: new Date(mangas[0]['createdAt'])
+        }
+      },
       { new: true }
     )
 
@@ -89,7 +94,12 @@ class Rss {
       const nextUpdate = moment(lastUpdate).add(guild.timeUpdate, 's').toDate()
       if (new Date() > nextUpdate) {
         dates.push(moment(new Date()).add(guild.timeUpdate, 's').toDate())
-        this.getInfos(guild.lang, guild._id, guild.webHook, lastUpdate)
+        this.getInfos(
+          guild.lang,
+          guild._id,
+          guild.webHook,
+          new Date(guild.lastMangaUpdate)
+        )
       } else {
         dates.push(nextUpdate)
       }
