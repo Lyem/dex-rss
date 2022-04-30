@@ -26,7 +26,10 @@ class Rss {
         if (new Date(data['attributes']['createdAt']) > lastMangaUpdate) {
           try {
             mangas.push({
-              ch: data['attributes']['chapter'],
+              ch:
+                data['attributes']['chapter'] == null
+                  ? 'Oneshot'
+                  : data['attributes']['chapter'],
               chId: data['id'],
               createdAt: data['attributes']['createdAt'],
               manga: data['relationships'][1]['attributes']['title']['en'],
