@@ -56,7 +56,8 @@ class Rss {
 
   async send(webHook: string, mangas: Array<any>) {
     console.log('send')
-    mangas.map((manga) => {
+    const newMangas = await bundler(mangas)
+    newMangas.map((manga) => {
       axios.post(`${webHook}`, {
         username: 'dex',
         avatar_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png',
@@ -64,7 +65,7 @@ class Rss {
           {
             title: `${manga['manga']}`,
             url: `https://mangadex.org/title/${manga['mangaId']}`,
-            description: `[Ch ${manga['ch']}](https://mangadex.org/chapter/${manga['chId']})`,
+            description: `[${manga['ch']}](https://mangadex.org/chapter/${manga['chId']})`,
             color: 15258703,
             image: {
               url: `https://og.mangadex.org/og-image/chapter/${manga['chId']}`
