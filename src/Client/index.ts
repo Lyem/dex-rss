@@ -4,6 +4,9 @@ import moment from 'moment'
 import axios from 'axios'
 import smallerDate from '../Utils/smaller_date'
 import bundler from '../Utils/bundler'
+import lastUpdates from '../Interfaces/last_updates'
+import updates from '../Interfaces/updates'
+import sleep from '../Utils/sleep'
 
 class Rss {
   async getInfos(
@@ -16,29 +19,33 @@ class Rss {
     let offset = 0
     const limit = 32
     let notFinish = true
-    const mangas: any[] = []
+    const mangas: updates.RootObject[] = []
     while (notFinish) {
-      const response = await axios.get(
+      const response = await axios.get<lastUpdates.RootObject>(
         `https://api.mangadex.org/chapter?limit=${limit}&offset=${offset}&translatedLanguage[]=${lang}&includes[]=user&includes[]=scanlation_group&includes[]=manga&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&order[readableAt]=desc`
       )
       const data = response.data
-      data.data.map((data: any) => {
-        if (new Date(data['attributes']['createdAt']) > lastMangaUpdate) {
+      data.data.map((data: lastUpdates.Datum) => {
+        if (new Date(data.attributes.createdAt) > lastMangaUpdate) {
           try {
+            const manga = data.relationships.filter(
+              (data: lastUpdates.Relationship) => data.type == 'manga'
+            )
             mangas.push({
               ch:
-                data['attributes']['chapter'] == null
+                data.attributes.chapter == null
                   ? 'Oneshot'
-                  : data['attributes']['chapter'],
-              chId: data['id'],
-              createdAt: data['attributes']['createdAt'],
-              manga: data['relationships'][1]['attributes']['title']['en'],
-              mangaId: data['relationships'][1]['id']
+                  : data.attributes.chapter,
+              chId: data.id,
+              createdAt: data.attributes.createdAt,
+              manga: manga[0].attributes.title.en,
+              mangaId: manga[0].id
             })
-          } catch {
-            console.log('a')
+          } catch (e) {
+            console.log(e)
           }
         } else {
+          console.log('cabo')
           notFinish = false
         }
       })
@@ -52,7 +59,7 @@ class Rss {
       mangas.length != 0
         ? {
             lastUpdate: new Date(),
-            lastMangaUpdate: new Date(mangas[0]['createdAt'])
+            lastMangaUpdate: mangas[0].createdAt
           }
         : {
             lastUpdate: new Date()
@@ -68,21 +75,22 @@ class Rss {
     this.send(webHook, mangas)
   }
 
-  async send(webHook: string, mangas: Array<any>) {
+  async send(webHook: string, mangas: Array<updates.RootObject>) {
     console.log('send')
-    const newMangas = await bundler(mangas)
-    newMangas.map((manga) => {
+    const newMangas = await bundler(mangas.slice(0).reverse())
+    for (let index = 0; index < newMangas.length; index++) {
+      await sleep(3000)
       axios.post(`${webHook}`, {
         username: 'dex',
         avatar_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png',
         embeds: [
           {
-            title: `${manga['manga']}`,
-            url: `https://mangadex.org/title/${manga['mangaId']}`,
-            description: `[${manga['ch']}](https://mangadex.org/chapter/${manga['chId']})`,
+            title: `${newMangas[index].manga}`,
+            url: `https://mangadex.org/title/${newMangas[index].mangaId}`,
+            description: `[${newMangas[index]['ch']}](https://mangadex.org/chapter/${newMangas[index].chId})`,
             color: 15258703,
             image: {
-              url: `https://og.mangadex.org/og-image/chapter/${manga['chId']}`
+              url: `https://og.mangadex.org/og-image/chapter/${newMangas[index].chId}`
             },
             footer: {
               text: 'Uma cortesia Dexbr',
@@ -91,7 +99,7 @@ class Rss {
           }
         ]
       })
-    })
+    }
   }
 
   async verify() {
