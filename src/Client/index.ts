@@ -45,7 +45,6 @@ class Rss {
             console.log(e)
           }
         } else {
-          console.log('cabo')
           notFinish = false
         }
       })
