@@ -3,6 +3,7 @@ services:
   rss:
     container_name: dex-rss
     build: .
+    restart: unless-stopped
     volumes:
       - .:/home/rss
       - /home/rss/node_modules
