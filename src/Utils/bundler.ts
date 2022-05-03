@@ -14,7 +14,8 @@ async function bundler(mangas: Array<updates.RootObject>) {
       mangaId: mangas[0].mangaId,
       chId: compress[0].chId,
       ch: `${
-        compress.length > 1
+        compress.length > 1 &&
+        compress[0].ch != compress[compress.length - 1].ch
           ? `Cap ${compress[0].ch} - Cap ${compress[compress.length - 1].ch}`
           : `Cap ${compress[0].ch}`
       }`
