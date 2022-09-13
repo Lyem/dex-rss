@@ -81,7 +81,7 @@ class Rss {
       await sleep(3000)
       axios.post(`${webHook}`, {
         username: 'dex',
-        avatar_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png',
+        avatar_url: 'https://mangadex.org/avatar.png',
         embeds: [
           {
             title: `${newMangas[index].manga}`,
@@ -93,7 +93,7 @@ class Rss {
             },
             footer: {
               text: 'Uma cortesia Dexbr',
-              icon_url: 'https://mangadex.org/_nuxt/img/avatar.8b8b63b.png'
+              icon_url: 'https://mangadex.org/avatar.png'
             }
           }
         ]
