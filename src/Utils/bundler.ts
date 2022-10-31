@@ -21,6 +21,8 @@ async function bundler(mangas: Array<updates.RootObject>) {
       }`
     }
 
+    //Sexo.
+
     newMangas.push(manga)
 
     mangas = mangas.filter(
